@@ -1,63 +1,43 @@
-CREATE TABLE employee (
-id BIGSERIAL NOT NULL PRIMARY KEY,
-first_name VARCHAR(50) NOT NULL,
-last_name VARCHAR(50) NOT NULL,
-gender VARCHAR(6) NOT NULL,
-age INT NOT NULL
-);
+CREATE TABLE city (
+city_id INT PRIMARY KEY,
+city_name VARCHAR(50) NOT NULL);
 
-SELECT * FROM employee;
+ALTER TABLE employee ADD COLUMN city_id INT;
 
-INSERT INTO employee (
-first_name, last_name, gender, age)
-VALUES ('Ivan', 'Ivanov','Male', 32);
+ALTER TABLE employee ADD FOREIGN KEY (city_id) REFERENCES city(city_id);
 
-INSERT INTO employee (
-first_name, last_name, gender, age)
-VALUES ('Aleksandr', 'Petrov', 'Male', 21);
+INSERT INTO city (city_id,city_name) VALUES
+(1,'Vladivostok'),
+(2,'Moscow'),
+(3,'Omsk'),
+(4,'Saint-Petersburg'),
+(5,'Nerungri'),
+(6,'London');
 
-INSERT INTO employee (
-first_name, last_name, gender, age)
-VALUES ('Oksana', 'Orlova', 'Female', 19);
+UPDATE employee SET city_id = 2 WHERE id = 1;
+UPDATE employee SET city_id = 5 WHERE id = 3;
+UPDATE employee SET city_id = 3 WHERE id = 4;
+UPDATE employee SET city_id = 2 WHERE id = 6;
+UPDATE employee SET city_id = 1 WHERE id = 5;
 
-SELECT * FROM employee;
 
-UPDATE employee SET first_name = 'Sidor', last_name = 'Sidorov', gender = 'Male', age = 48 WHERE id = 3;
 
-SELECT * FROM employee;
+SELECT first_name, last_name, city_name FROM employee
+INNER JOIN city
+ON employee.city_id = city.city_id;
 
-DELETE FROM employee WHERE id = 2;
+SELECT city_name, first_name, last_name FROM employee
+RIGHT JOIN city
+ON employee.city_id = city.city_id;
 
-SELECT * FROM employee;
+SELECT first_name, city_name FROM employee
+FULL JOIN city
+ON employee.city_id = city.city_id;
 
-INSERT INTO employee(
-first_name, last_name, gender, age)
-VALUES ('Oleg', 'Rogov', 'Male', 52);
+SELECT first_name, city_name FROM employee
+CROSS JOIN city;
 
-INSERT INTO employee(
-first_name, last_name, gender, age)
-VALUES ('Olga', 'Popova', 'Female', 38);
-
-INSERT INTO employee(
-first_name, last_name, gender, age)
-VALUES ('Vera', 'Sharova', 'Female', 26);
-
-SELECT first_name AS Имя, last_name AS Фамилия FROM employee;
-
-SELECT * FROM employee WHERE age < 30 OR age > 50;
-
-SELECT * FROM employee WHERE age BETWEEN 30 AND 50;
-
-SELECT * FROM employee ORDER BY last_name DESC;
-
-SELECT * FROM employee WHERE LENGTH (first_name) > 4;
-
-UPDATE employee SET first_name = 'Ivan' WHERE first_name = 'Sidor';
-
-UPDATE employee SET first_name = 'Olga' WHERE first_name = 'Vera';
-
-SELECT first_name AS Имя, SUM(age) AS Суммарный_возраст FROM employee GROUP BY Имя;
-
-SELECT first_name AS Имя, MIN(age) AS Минимальный_возраст FROM employee GROUP BY Имя;
-
-SELECT DISTINCT first_name AS Имя, age AS Максимальный_возраст FROM employee ORDER BY age;
+SELECT DISTINCT city_name FROM city
+LEFT JOIN employee
+ON employee.city_id = city.city_id
+WHERE employee.city_id IS NULL;
